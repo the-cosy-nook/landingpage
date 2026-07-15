@@ -95,4 +95,113 @@ document.addEventListener('DOMContentLoaded', () => {
     yearElement.textContent = new Date().getFullYear();
   }
 
+  /* ==========================================================================
+     Newsletter Signup Logic
+     ========================================================================== */
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterStatus = document.getElementById('newsletter-status');
+  const newsletterButton = document.getElementById('mc-embedded-subscribe');
+
+  const messages = {
+    de: {
+      pending: 'Fast geschafft. Bitte bestaetige die Anmeldung in deinem E-Mail-Postfach.',
+      subscribed: 'Du bist bereits angemeldet. Schoen, dass du dabei bist.',
+      invalidEmail: 'Bitte gib eine gueltige E-Mail-Adresse ein.',
+      turnstile: 'Bitte bestaetige kurz, dass du ein Mensch bist.',
+      rateLimited: 'Zu viele Versuche. Bitte probiere es in ein paar Minuten erneut.',
+      error: 'Das hat leider nicht geklappt. Bitte versuche es gleich noch einmal.',
+      loading: 'Wird angemeldet...'
+    },
+    en: {
+      pending: 'Almost there. Please confirm the signup in your email inbox.',
+      subscribed: 'You are already subscribed. Lovely to have you here.',
+      invalidEmail: 'Please enter a valid email address.',
+      turnstile: 'Please confirm that you are human.',
+      rateLimited: 'Too many attempts. Please try again in a few minutes.',
+      error: 'That did not work. Please try again in a moment.',
+      loading: 'Signing up...'
+    }
+  };
+
+  function getActiveLang() {
+    return htmlElement.getAttribute('lang') === 'en' ? 'en' : 'de';
+  }
+
+  function setNewsletterStatus(type, key) {
+    if (!newsletterStatus) return;
+
+    const lang = getActiveLang();
+    newsletterStatus.textContent = messages[lang][key] || messages[lang].error;
+    newsletterStatus.dataset.status = type;
+  }
+
+  function resetTurnstile() {
+    if (window.turnstile && typeof window.turnstile.reset === 'function') {
+      window.turnstile.reset();
+    }
+  }
+
+  if (newsletterForm && newsletterButton) {
+    newsletterForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(newsletterForm);
+      const email = String(formData.get('email') || '').trim();
+      const turnstileToken = String(formData.get('cf-turnstile-response') || '');
+
+      if (!newsletterForm.checkValidity() || !email) {
+        setNewsletterStatus('error', 'invalidEmail');
+        return;
+      }
+
+      if (!turnstileToken) {
+        setNewsletterStatus('error', 'turnstile');
+        return;
+      }
+
+      newsletterButton.disabled = true;
+      newsletterButton.setAttribute('aria-busy', 'true');
+      setNewsletterStatus('loading', 'loading');
+
+      try {
+        const response = await fetch(newsletterForm.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            email,
+            language: getActiveLang(),
+            turnstileToken
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          newsletterForm.reset();
+          resetTurnstile();
+          setNewsletterStatus('success', result.code === 'already_subscribed' ? 'subscribed' : 'pending');
+          return;
+        }
+
+        if (response.status === 429) {
+          setNewsletterStatus('error', 'rateLimited');
+          resetTurnstile();
+          return;
+        }
+
+        setNewsletterStatus('error', result.code === 'turnstile_failed' ? 'turnstile' : 'error');
+        resetTurnstile();
+      } catch (error) {
+        setNewsletterStatus('error', 'error');
+        resetTurnstile();
+      } finally {
+        newsletterButton.disabled = false;
+        newsletterButton.removeAttribute('aria-busy');
+      }
+    });
+  }
+
 });

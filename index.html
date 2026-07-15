@@ -29,12 +29,14 @@
   <!-- Preconnect to Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://challenges.cloudflare.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
     rel="stylesheet">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body>
@@ -205,14 +207,10 @@
               <span class="lang-en">Get notified when we open</span>
             </h3>
 
-            <!-- Mailchimp Form Integration -->
-            <!-- REPLACE ACTION URL WITH YOUR OWN MAILCHIMP AUDIENCE FORM ACTION URL -->
-            <form
-              action="https://github.us21.list-manage.com/subscribe/post?u=placeholder_u_val&amp;id=placeholder_id_val"
-              method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank" novalidate
-              class="signup-form">
+            <form action="/api/subscribe" method="post" id="newsletter-form" class="signup-form">
               <div class="floating-input-group">
-                <input type="email" name="EMAIL" id="mce-EMAIL" class="email-input" required autocomplete="email">
+                <input type="email" name="email" id="mce-EMAIL" class="email-input" required autocomplete="email"
+                  placeholder=" ">
                 <label for="mce-EMAIL" class="input-label">
                   <span class="lang-de">Deine E-Mail-Adresse...</span>
                   <span class="lang-en">Your email address...</span>
@@ -241,11 +239,12 @@
                 </button>
               </div>
 
-              <!-- Bot protection hidden field -->
-              <div style="position: absolute; left: -5000px;" aria-hidden="true">
-                <input type="text" name="b_placeholder_u_val_placeholder_id_val" tabindex="-1" value="">
+              <div class="turnstile-wrap">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAD2rhU7RAvBHykrb" data-theme="dark"
+                  data-size="flexible" data-action="newsletter"></div>
               </div>
             </form>
+            <p class="form-status" id="newsletter-status" aria-live="polite"></p>
             <p class="privacy-note">
               <span class="lang-de">Kein Spam. Nur ein warmer Brief, wenn die Lichter angehen.</span>
               <span class="lang-en">No spam. Just a warm letter when the lights turn on.</span>
