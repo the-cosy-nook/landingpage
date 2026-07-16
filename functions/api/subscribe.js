@@ -65,7 +65,8 @@ export async function onRequestPost(context) {
 
     return json({
       ok: true,
-      code: mailchimpResult.alreadySubscribed ? 'already_subscribed' : 'confirmation_sent'
+      code: getSuccessCode(mailchimpResult),
+      mailchimpStatus: mailchimpResult.status
     });
   } catch (error) {
     console.error(error);
@@ -215,7 +216,17 @@ async function subscribeWithDoubleOptIn(env, email, language) {
     const existingMember = await existingResponse.json();
 
     if (existingMember.status === 'subscribed' || existingMember.status === 'pending') {
-      return { alreadySubscribed: existingMember.status === 'subscribed' };
+      console.info('Mailchimp member already exists.', {
+        status: existingMember.status,
+        listId: existingMember.list_id,
+        webId: existingMember.web_id
+      });
+
+      return {
+        alreadySubscribed: existingMember.status === 'subscribed',
+        alreadyPending: existingMember.status === 'pending',
+        status: existingMember.status
+      };
     }
   } else if (existingResponse.status !== 404) {
     throw new NewsletterServiceError(`Mailchimp member lookup failed with ${existingResponse.status}.`);
@@ -243,7 +254,31 @@ async function subscribeWithDoubleOptIn(env, email, language) {
     throw new NewsletterServiceError(`Mailchimp subscribe failed with ${response.status}: ${errorBody}`);
   }
 
-  return { alreadySubscribed: false };
+  const member = await response.json();
+
+  console.info('Mailchimp subscription request accepted.', {
+    status: member.status,
+    listId: member.list_id,
+    webId: member.web_id
+  });
+
+  return {
+    alreadySubscribed: member.status === 'subscribed',
+    alreadyPending: member.status === 'pending',
+    status: member.status || 'unknown'
+  };
+}
+
+function getSuccessCode(mailchimpResult) {
+  if (mailchimpResult.alreadySubscribed) {
+    return 'already_subscribed';
+  }
+
+  if (mailchimpResult.alreadyPending) {
+    return 'confirmation_pending';
+  }
+
+  return 'confirmation_sent';
 }
 
 function parseTags(tags) {

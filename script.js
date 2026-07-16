@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const messages = {
     de: {
       pending: 'Fast geschafft. Bitte bestaetige die Anmeldung in deinem E-Mail-Postfach.',
+      confirmationPending: 'Deine Anmeldung wartet noch auf Bestaetigung. Bitte pruefe auch den Spam-Ordner.',
       subscribed: 'Du bist bereits angemeldet. Schoen, dass du dabei bist.',
       invalidEmail: 'Bitte gib eine gueltige E-Mail-Adresse ein.',
       turnstile: 'Bitte bestaetige kurz, dass du ein Mensch bist.',
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     en: {
       pending: 'Almost there. Please confirm the signup in your email inbox.',
+      confirmationPending: 'Your signup is still waiting for confirmation. Please also check your spam folder.',
       subscribed: 'You are already subscribed. Lovely to have you here.',
       invalidEmail: 'Please enter a valid email address.',
       turnstile: 'Please confirm that you are human.',
@@ -200,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
           newsletterForm.reset();
           resetTurnstile();
-          setNewsletterStatus('success', result.code === 'already_subscribed' ? 'subscribed' : 'pending');
+          setNewsletterStatus('success', getNewsletterSuccessKey(result.code));
           return;
         }
 
@@ -236,6 +238,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return 'error';
+  }
+
+  function getNewsletterSuccessKey(code) {
+    if (code === 'already_subscribed') {
+      return 'subscribed';
+    }
+
+    if (code === 'confirmation_pending') {
+      return 'confirmationPending';
+    }
+
+    return 'pending';
   }
 
 });

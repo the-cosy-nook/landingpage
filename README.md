@@ -50,6 +50,19 @@ genaue Ursache.
 
 Die Function nutzt die Mailchimp Marketing API 3.0. Neue oder erneut anmeldende Kontakte werden mit `status: "pending"` gesetzt, damit Mailchimp die Double-Opt-In-Mail verschickt. Bereits abonnierte oder noch nicht bestaetigte Kontakte werden als Erfolg behandelt, ohne den Status unnoetig zu veraendern.
 
+Wenn die Landingpage Erfolg meldet, aber keine Mail ankommt:
+
+- In der Browser-Network-Response von `/api/subscribe` `mailchimpStatus` pruefen.
+  `pending` bedeutet, dass Mailchimp den Kontakt als wartend angenommen hat.
+- In Mailchimp die richtige Audience pruefen. Die `MAILCHIMP_AUDIENCE_ID` ist
+  die Audience ID aus `Audience > Settings > Audience name and defaults`, nicht
+  der Anzeigename.
+- Der API-Key und `MAILCHIMP_SERVER_PREFIX` muessen zum gleichen Account passen.
+  Der Prefix steht auch in der Mailchimp-URL, z.B. `us10`.
+- Ein bereits `pending` Kontakt bekommt bei erneutem Submit nicht zwingend eine
+  neue Double-Opt-In-Mail. Zum Testen am besten eine frische E-Mail-Adresse
+  verwenden und auch Spam/Promotions pruefen.
+
 ## Lokale Entwicklung
 
 Secrets nicht committen. Fuer lokale Tests mit Wrangler kannst du eine `.dev.vars` anlegen:
