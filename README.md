@@ -27,7 +27,9 @@ data-sitekey="REPLACE_WITH_TURNSTILE_SITE_KEY"
 Binding name: SUBSCRIBE_RATE_LIMIT
 ```
 
-4. In Cloudflare Pages unter `Settings > Variables and Secrets` setzen:
+4. In Cloudflare Pages unter `Settings > Variables and Secrets` fuer die
+   passende Umgebung setzen. Die Custom Domain nutzt normalerweise
+   `Production`, Preview-URLs nutzen `Preview`.
 
 ```text
 TURNSTILE_SECRET_KEY      Secret
@@ -36,6 +38,11 @@ MAILCHIMP_AUDIENCE_ID    Variable
 MAILCHIMP_SERVER_PREFIX  Variable, optional wenn der API-Key auf "-us21" endet
 MAILCHIMP_TAGS           Variable, optional, z.B. "Landing Page, Coming Soon"
 ```
+
+Wenn `/api/subscribe` mit `500` antwortet und Turnstile bereits erfolgreich ist,
+fehlt meistens eines dieser Production-Bindings/Secrets oder Mailchimp lehnt die
+Anfrage ab. In Cloudflare Pages unter `Functions > Real-time logs` steht die
+genaue Ursache.
 
 `wrangler.example.toml` zeigt die passende KV-Binding-Struktur, falls du die Konfiguration ueber Wrangler pflegen willst.
 

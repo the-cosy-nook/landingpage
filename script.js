@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
       invalidEmail: 'Bitte gib eine gueltige E-Mail-Adresse ein.',
       turnstile: 'Bitte bestaetige kurz, dass du ein Mensch bist.',
       turnstileConfig: 'Der Spam-Schutz ist fuer diese Domain noch nicht freigeschaltet.',
+      configuration: 'Der Newsletter ist noch nicht vollstaendig eingerichtet.',
+      newsletterService: 'Der Newsletter-Dienst ist gerade nicht erreichbar.',
       rateLimited: 'Zu viele Versuche. Bitte probiere es in ein paar Minuten erneut.',
       error: 'Das hat leider nicht geklappt. Bitte versuche es gleich noch einmal.',
       loading: 'Wird angemeldet...'
@@ -119,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
       invalidEmail: 'Please enter a valid email address.',
       turnstile: 'Please confirm that you are human.',
       turnstileConfig: 'Spam protection is not enabled for this domain yet.',
+      configuration: 'The newsletter is not fully configured yet.',
+      newsletterService: 'The newsletter service is not reachable right now.',
       rateLimited: 'Too many attempts. Please try again in a few minutes.',
       error: 'That did not work. Please try again in a moment.',
       loading: 'Signing up...'
@@ -206,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        setNewsletterStatus('error', result.code === 'turnstile_failed' ? 'turnstile' : 'error');
+        setNewsletterStatus('error', getNewsletterErrorKey(result.code));
         resetTurnstile();
       } catch (error) {
         setNewsletterStatus('error', 'error');
@@ -216,6 +220,22 @@ document.addEventListener('DOMContentLoaded', () => {
         newsletterButton.removeAttribute('aria-busy');
       }
     });
+  }
+
+  function getNewsletterErrorKey(code) {
+    if (code === 'turnstile_failed') {
+      return 'turnstile';
+    }
+
+    if (code === 'configuration_error') {
+      return 'configuration';
+    }
+
+    if (code === 'newsletter_service_error') {
+      return 'newsletterService';
+    }
+
+    return 'error';
   }
 
 });

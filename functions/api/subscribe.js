@@ -69,6 +69,15 @@ export async function onRequestPost(context) {
     });
   } catch (error) {
     console.error(error);
+
+    if (error instanceof ConfigurationError) {
+      return json({ ok: false, code: 'configuration_error' }, 500);
+    }
+
+    if (error instanceof NewsletterServiceError) {
+      return json({ ok: false, code: 'newsletter_service_error' }, 502);
+    }
+
     return json({ ok: false, code: 'server_error' }, 500);
   }
 }
@@ -188,7 +197,7 @@ async function subscribeWithDoubleOptIn(env, email, language) {
   const dataCenter = env.MAILCHIMP_SERVER_PREFIX || env.MAILCHIMP_API_KEY.split('-').pop();
 
   if (!dataCenter || dataCenter === env.MAILCHIMP_API_KEY) {
-    throw new Error('MAILCHIMP_SERVER_PREFIX is required when the API key has no data center suffix.');
+    throw new ConfigurationError('MAILCHIMP_SERVER_PREFIX is required when the API key has no data center suffix.');
   }
 
   const memberHash = md5(email);
@@ -209,7 +218,7 @@ async function subscribeWithDoubleOptIn(env, email, language) {
       return { alreadySubscribed: existingMember.status === 'subscribed' };
     }
   } else if (existingResponse.status !== 404) {
-    throw new Error(`Mailchimp member lookup failed with ${existingResponse.status}.`);
+    throw new NewsletterServiceError(`Mailchimp member lookup failed with ${existingResponse.status}.`);
   }
 
   const tags = parseTags(env.MAILCHIMP_TAGS);
@@ -231,7 +240,7 @@ async function subscribeWithDoubleOptIn(env, email, language) {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Mailchimp subscribe failed with ${response.status}: ${errorBody}`);
+    throw new NewsletterServiceError(`Mailchimp subscribe failed with ${response.status}: ${errorBody}`);
   }
 
   return { alreadySubscribed: false };
@@ -263,7 +272,21 @@ function json(body, status = 200, headers = {}) {
 
 function assertEnv(value, name) {
   if (!value) {
-    throw new Error(`Missing required environment binding: ${name}`);
+    throw new ConfigurationError(`Missing required environment binding: ${name}`);
+  }
+}
+
+class ConfigurationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ConfigurationError';
+  }
+}
+
+class NewsletterServiceError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'NewsletterServiceError';
   }
 }
 
