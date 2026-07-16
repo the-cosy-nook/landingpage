@@ -63,6 +63,36 @@ Wenn die Landingpage Erfolg meldet, aber keine Mail ankommt:
   neue Double-Opt-In-Mail. Zum Testen am besten eine frische E-Mail-Adresse
   verwenden und auch Spam/Promotions pruefen.
 
+## SEO
+
+Primaere Description:
+
+```text
+The Cozy Nook eröffnet bald: Bücher, Wolle, Tassen und ein Hauch Magie. Abonniere den Newsletter und erfahre zuerst, wann der Laden öffnet.
+```
+
+Primaere Keywords und Themen:
+
+```text
+The Cozy Nook
+Bücher
+Wolle
+Tassen
+Magie
+Newsletter
+Buchladen
+Wolle kaufen
+handgemachte Geschenke
+cozy shop
+books
+wool
+mugs
+```
+
+Google verwendet das `keywords`-Meta-Tag nicht fuer Rankings. Die Keywords
+dienen hier als redaktionelle Leitplanken fuer Titel, Description, sichtbaren
+Text und spaetere Inhalte.
+
 ## Lokale Entwicklung
 
 Secrets nicht committen. Fuer lokale Tests mit Wrangler kannst du eine `.dev.vars` anlegen:

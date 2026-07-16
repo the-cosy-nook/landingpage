@@ -225,6 +225,7 @@ async function subscribeWithDoubleOptIn(env, email, language) {
       return {
         alreadySubscribed: existingMember.status === 'subscribed',
         alreadyPending: existingMember.status === 'pending',
+        created: false,
         status: existingMember.status
       };
     }
@@ -264,7 +265,8 @@ async function subscribeWithDoubleOptIn(env, email, language) {
 
   return {
     alreadySubscribed: member.status === 'subscribed',
-    alreadyPending: member.status === 'pending',
+    alreadyPending: false,
+    created: true,
     status: member.status || 'unknown'
   };
 }
@@ -278,7 +280,11 @@ function getSuccessCode(mailchimpResult) {
     return 'confirmation_pending';
   }
 
-  return 'confirmation_sent';
+  if (mailchimpResult.status === 'pending') {
+    return 'confirmation_sent';
+  }
+
+  return 'confirmation_processed';
 }
 
 function parseTags(tags) {
