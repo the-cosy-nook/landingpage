@@ -13,6 +13,8 @@ Das Formular sendet an `/api/subscribe`. Die Cloudflare Function erledigt:
 ## Cloudflare Setup
 
 1. Turnstile Widget in Cloudflare erstellen.
+   In `Hostname Management` alle Domains freigeben, auf denen die Seite laeuft,
+   z.B. `landingpage-djv.pages.dev` und spaeter die produktive Custom Domain.
 2. Den oeffentlichen Site Key in `index.html` ersetzen:
 
 ```html

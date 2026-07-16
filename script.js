@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subscribed: 'Du bist bereits angemeldet. Schoen, dass du dabei bist.',
       invalidEmail: 'Bitte gib eine gueltige E-Mail-Adresse ein.',
       turnstile: 'Bitte bestaetige kurz, dass du ein Mensch bist.',
+      turnstileConfig: 'Der Spam-Schutz ist fuer diese Domain noch nicht freigeschaltet.',
       rateLimited: 'Zu viele Versuche. Bitte probiere es in ein paar Minuten erneut.',
       error: 'Das hat leider nicht geklappt. Bitte versuche es gleich noch einmal.',
       loading: 'Wird angemeldet...'
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subscribed: 'You are already subscribed. Lovely to have you here.',
       invalidEmail: 'Please enter a valid email address.',
       turnstile: 'Please confirm that you are human.',
+      turnstileConfig: 'Spam protection is not enabled for this domain yet.',
       rateLimited: 'Too many attempts. Please try again in a few minutes.',
       error: 'That did not work. Please try again in a moment.',
       loading: 'Signing up...'
@@ -139,6 +141,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.turnstile && typeof window.turnstile.reset === 'function') {
       window.turnstile.reset();
     }
+  }
+
+  function handleTurnstileError(errorCode) {
+    setNewsletterStatus('error', errorCode === '110200' ? 'turnstileConfig' : 'turnstile');
+  }
+
+  window.addEventListener('turnstile:error', (event) => {
+    handleTurnstileError(event.detail?.errorCode);
+  });
+
+  if (window.__turnstileError) {
+    handleTurnstileError(window.__turnstileError);
   }
 
   if (newsletterForm && newsletterButton) {

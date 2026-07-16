@@ -36,6 +36,15 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <script>
+    window.onTurnstileError = function (errorCode) {
+      window.__turnstileError = String(errorCode || '');
+      window.dispatchEvent(new CustomEvent('turnstile:error', {
+        detail: { errorCode: window.__turnstileError }
+      }));
+      return true;
+    };
+  </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
@@ -241,7 +250,7 @@
 
               <div class="turnstile-wrap">
                 <div class="cf-turnstile" data-sitekey="0x4AAAAAAD2rhU7RAvBHykrb" data-theme="dark"
-                  data-size="flexible" data-action="newsletter"></div>
+                  data-size="flexible" data-action="newsletter" data-error-callback="onTurnstileError"></div>
               </div>
             </form>
             <p class="form-status" id="newsletter-status" aria-live="polite"></p>
