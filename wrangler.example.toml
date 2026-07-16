@@ -4,5 +4,5 @@ pages_build_output_dir = "."
 
 [[kv_namespaces]]
 binding = "SUBSCRIBE_RATE_LIMIT"
-id = "replace-with-production-kv-namespace-id"
+id = "1d344e775f9c4a7aa2dddb14e5f7f129"
 preview_id = "replace-with-preview-kv-namespace-id"
