@@ -368,27 +368,14 @@
   .logo-container {
     margin-inline: auto;
     margin-block-end: var(--space-sm);
-    width: clamp(140px, 15vw, 180px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 3px solid var(--color-gold);
-    padding: 4px;
-    background: var(--color-dark-bg);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(212, 159, 57, 0.15);
-    overflow: hidden;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-
-  .logo-container:hover {
-    transform: rotate(3deg) scale(1.04);
+    inline-size: 250px;
+    block-size: 250px;
   }
 
   .brand-logo {
-    width: 100%;
-    height: 100%;
-    /* object-fit: cover; */
-    border-radius: 50%;
-    transform: scale(1.12);
+    inline-size: 250px;
+    block-size: 250px;
+    object-fit: contain;
   }
 
   .brand-name {
